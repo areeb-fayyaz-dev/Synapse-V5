@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Neural-Logic Core</title>
+    <style>
+        :root { --neon: #00f2ff; --pink: #ff0055; --bg: #05050a; }
+        body { 
+            background: var(--bg); color: white; font-family: 'Inter', sans-serif;
+            display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0;
+        }
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 25px;
+            padding: 40px;
+            width: 90%; max-width: 450px;
+            box-shadow: 0 20px 50px rgba(0,0,0,1);
+            text-align: center;
+            position: relative;
+        }
+        .signature {
+            position: absolute; bottom: 15px; right: 20px;
+            font-size: 0.6rem; color: rgba(255,255,255,0.1);
+            letter-spacing: 2px; text-transform: uppercase;
+        }
+        .node-container { display: flex; justify-content: space-around; margin: 30px 0; }
+        .node {
+            width: 75px; height: 75px; border-radius: 12px;
+            border: 1px solid #333; cursor: pointer; transition: 0.3s;
+            display: flex; align-items: center; justify-content: center;
+            font-weight: bold; font-size: 0.8rem; background: rgba(0,0,0,0.2);
+        }
+        .node.active { border-color: var(--neon); box-shadow: 0 0 15px var(--neon); color: var(--neon); }
+        .selector {
+            background: #111; color: white; border: 1px solid #333;
+            padding: 10px; border-radius: 8px; width: 100%; margin-bottom: 20px;
+        }
+        .gate-display {
+            width: 90px; height: 90px; background: #1a1a2e; margin: 20px auto;
+            clip-path: polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%);
+            display: flex; align-items: center; justify-content: center;
+            border: 1px solid var(--pink); font-weight: bold;
+        }
+        .console {
+            background: rgba(0,0,0,0.4); border-radius: 10px; padding: 15px;
+            font-family: monospace; font-size: 0.85rem; border-left: 3px solid var(--neon);
+            text-align: left; min-height: 50px;
+        }
+        .glow-text { text-shadow: 0 0 10px var(--neon); color: var(--neon); }
+    </style>
+</head>
+<body>
+    <div class="glass-panel">
+        <h1 class="glow-text" style="font-size: 1.5rem; margin-bottom: 5px;">NEURAL-LOGIC V3</h1>
+        <p style="font-size: 0.7rem; color: #666; margin-bottom: 25px;">APPLIED PHYSICS SIMULATION</p>
+
+        <select id="gateType" class="selector" onchange="runLogic()">
+            <option value="AND">CORE_INIT: AND</option>
+            <option value="OR">CORE_INIT: OR</option>
+            <option value="XOR">CORE_INIT: XOR</option>
+        </select>
+
+        <div class="node-container">
+            <div id="A" class="node" onclick="toggle('A')">INP_A: 0</div>
+            <div id="B" class="node" onclick="toggle('B')">INP_B: 0</div>
+        </div>
+
+        <div class="gate-display" id="gateLabel">AND</div>
+
+        <div class="console" id="log">> SYSTEM IDLE</div>
+
+        <div class="signature">Areeb_</div>
+    </div>
+
+    <script>
+        let inputs = { A: 0, B: 0 };
+        function toggle(id) {
+            inputs[id] = inputs[id] === 0 ? 1 : 0;
+            const el = document.getElementById(id);
+            el.classList.toggle('active');
+            el.innerText = `INP_${id}: ${inputs[id]}`;
+            runLogic();
+        }
+        function runLogic() {
+            const gate = document.getElementById('gateType').value;
+            const log = document.getElementById('log');
+            document.getElementById('gateLabel').innerText = gate;
+            
+            let output = 0;
+            if(gate === 'AND') output = inputs.A && inputs.B;
+            if(gate === 'OR') output = inputs.A || inputs.B;
+            if(gate === 'XOR') output = inputs.A ^ inputs.B;
+
+            if(output) {
+                log.style.color = "var(--neon)";
+                log.innerHTML = `> PATH_ACTIVE: 1<br>> STATUS: CONDUCTING`;
+            } else {
+                log.style.color = "#888";
+                log.innerHTML = `> PATH_INACTIVE: 0<br>> STATUS: IDLE`;
+            }
+        }
+    </script>
+</body>
+</html>
