@@ -1,73 +1,84 @@
-kk<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>SYNAPSE-V5 | Areeb Neural Lab</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>SYNAPSE-V5 | Neural Lab</title>
     <style>
         :root { --neon: #00f2ff; --purple: #bc00ff; --bg: #030305; }
-        body { background: var(--bg); color: white; font-family: 'JetBrains Mono', monospace; margin: 0; overflow: hidden; cursor: crosshair; }
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        body { background: var(--bg); color: white; font-family: 'JetBrains Mono', monospace; margin: 0; overflow: hidden; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; }
         
-        /* Grid Background */
+        /* Original Grid Background */
         .grid { position: fixed; width: 200%; height: 200%; background-image: linear-gradient(#111 1px, transparent 1px), linear-gradient(90deg, #111 1px, transparent 1px); background-size: 50px 50px; z-index: -1; animation: move 20s linear infinite; }
         @keyframes move { from { transform: translate(0,0); } to { transform: translate(-50px, -50px); } }
 
-        /* Floating Signature */
-        .signature { position: fixed; top: 20px; left: 20px; border-left: 2px solid var(--purple); padding-left: 10px; opacity: 0.7; }
-        .signature span { color: var(--neon); font-size: 18px; font-weight: bold; }
+        .header { position: absolute; top: 30px; text-align: center; z-index: 2; width: 100%; }
+        .header h1 { font-size: 28px; letter-spacing: 5px; margin: 0; color: var(--purple); text-shadow: 0 0 15px var(--purple); }
+        .areeb-tag { font-size: 10px; color: #444; letter-spacing: 3px; margin-top: 5px; }
 
-        /* Central Neural Core */
-        .stage { height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; }
-        .neuron-node { width: 150px; height: 150px; border: 1px solid #333; border-radius: 50%; position: relative; transition: 0.3s; display: flex; align-items: center; justify-content: center; background: rgba(0,0,0,0.5); }
-        .neuron-node:hover { border-color: var(--neon); box-shadow: 0 0 50px var(--neon); transform: scale(1.1); }
+        /* The Neuron Core */
+        .neuron-node { width: 200px; height: 200px; border: 1px solid #222; border-radius: 50%; position: relative; transition: 0.3s; display: flex; align-items: center; justify-content: center; background: rgba(0,0,0,0.5); z-index: 5; }
         
-        /* Pulse Effect */
-        .pulse { position: absolute; width: 100%; height: 100%; border-radius: 50%; border: 1px solid var(--neon); opacity: 0; pointer-events: none; }
-        .active .pulse { animation: ripple 0.8s ease-out; }
-        @keyframes ripple { 0% { transform: scale(1); opacity: 1; } 100% { transform: scale(2.5); opacity: 0; } }
+        /* Firing Animation */
+        .firing { border-color: var(--neon) !important; box-shadow: 0 0 60px var(--neon), inset 0 0 20px var(--neon) !important; transform: scale(1.1); }
+        
+        .pulse { position: absolute; width: 100%; height: 100%; border-radius: 50%; border: 2px solid var(--neon); opacity: 0; pointer-events: none; }
+        .firing .pulse { animation: ripple 0.6s ease-out; }
+        @keyframes ripple { 0% { transform: scale(1); opacity: 1; } 100% { transform: scale(2); opacity: 0; } }
 
-        /* HUD Overlay */
         .hud { position: fixed; bottom: 40px; text-align: center; width: 100%; pointer-events: none; }
-        .data-stream { color: var(--neon); font-size: 12px; letter-spacing: 5px; text-transform: uppercase; margin-top: 10px; }
+        #output { font-size: 50px; font-weight: bold; color: #111; transition: 0.2s; }
+        .firing-text { color: var(--neon) !important; text-shadow: 0 0 20px var(--neon); }
     </style>
 </head>
 <body>
     <div class="grid"></div>
     
-    <div class="signature">
-        DESIGNED_BY<br><span>areeb</span>
+    <div class="header">
+        <h1>SYNAPSE-V5</h1>
+        <div class="areeb-tag">System Architect: areeb</div>
     </div>
 
-    <div class="stage">
-        <div id="main-neuron" class="neuron-node" onmouseenter="fireNeuron()">
-            <div class="pulse"></div>
-            <div id="status">IDLE</div>
-        </div>
-        
-        <div class="hud">
-            <div id="output" style="font-size: 40px; font-weight: bold;">0.00V</div>
-            <div class="data-stream">Awaiting Manual Stimulus - Hover to Fire</div>
-        </div>
+    <!-- Mouse over for Laptop, Click/Touch for Mobile -->
+    <div id="main-neuron" class="neuron-node" 
+         onmouseenter="triggerFire()" 
+         onclick="triggerFire()">
+        <div class="pulse"></div>
+        <div id="status" style="font-size: 14px; color: #333;">IDLE</div>
+    </div>
+    
+    <div class="hud">
+        <div id="output">0.00V</div>
+        <div style="font-size: 10px; color: #333; letter-spacing: 3px; margin-top: 10px;">NEUROMORPHIC PULSE INTERFACE</div>
     </div>
 
     <script>
-        function fireNeuron() {
+        let busy = false;
+
+        function triggerFire() {
+            if (busy) return;
+            busy = true;
+
             const node = document.getElementById('main-neuron');
             const status = document.getElementById('status');
             const output = document.getElementById('output');
             
-            node.classList.add('active');
+            node.classList.add('firing');
             status.innerText = "FIRING";
             status.style.color = "var(--neon)";
             output.innerText = "5.00V";
-            output.style.color = "var(--neon)";
+            output.classList.add('firing-text');
 
+            // Auto reset after pulse
             setTimeout(() => {
-                node.classList.remove('active');
+                node.classList.remove('firing');
                 status.innerText = "IDLE";
-                status.style.color = "white";
+                status.style.color = "#333";
                 output.innerText = "0.00V";
-                output.style.color = "white";
-            }, 800);
+                output.classList.remove('firing-text');
+                busy = false;
+            }, 700);
         }
     </script>
 </body>
