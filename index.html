@@ -1,68 +1,73 @@
-<!DOCTYPE html>
+kk<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>SYNAPSE-V5 | World-Rank Neuromorphic Core</title>
+    <title>SYNAPSE-V5 | Areeb Neural Lab</title>
     <style>
-        :root { --neon: #00f2ff; --bio: #7000ff; --dark: #05050a; }
-        body { background: var(--dark); color: white; font-family: 'JetBrains Mono', monospace; margin: 0; display: flex; flex-direction: column; height: 100vh; align-items: center; justify-content: center; overflow: hidden; }
-        .lab-frame { width: 90%; max-width: 1100px; border: 1px solid #1a1a2e; background: rgba(10, 10, 20, 0.9); padding: 40px; border-radius: 12px; box-shadow: 0 0 100px rgba(112, 0, 255, 0.15); display: grid; grid-template-columns: 1fr 1.5fr; gap: 30px; }
-        .header { grid-column: 1 / -1; border-bottom: 1px solid #1a1a2e; padding-bottom: 15px; display: flex; justify-content: space-between; align-items: center; }
-        .control-panel { padding-right: 20px; border-right: 1px solid #1a1a2e; }
-        .visual-engine { display: flex; flex-direction: column; align-items: center; justify-content: center; }
-        .neuron-core { width: 150px; height: 150px; border: 2px dashed var(--neon); border-radius: 50%; display: flex; align-items: center; justify-content: center; position: relative; transition: 0.3s; animation: pulse 2s infinite; }
-        .firing { border: 4px solid var(--neon); box-shadow: 0 0 80px var(--neon); transform: scale(1.1); background: rgba(0, 242, 255, 0.1); }
-        .data-line { color: var(--bio); font-size: 11px; margin: 5px 0; }
-        button { background: transparent; border: 1px solid var(--neon); color: var(--neon); padding: 15px 25px; cursor: pointer; transition: 0.3s; width: 100%; margin-top: 20px; letter-spacing: 2px; }
-        button:hover { background: var(--neon); color: black; box-shadow: 0 0 30px var(--neon); }
-        @keyframes pulse { 0% { opacity: 0.6; } 50% { opacity: 1; } 100% { opacity: 0.6; } }
+        :root { --neon: #00f2ff; --purple: #bc00ff; --bg: #030305; }
+        body { background: var(--bg); color: white; font-family: 'JetBrains Mono', monospace; margin: 0; overflow: hidden; cursor: crosshair; }
+        
+        /* Grid Background */
+        .grid { position: fixed; width: 200%; height: 200%; background-image: linear-gradient(#111 1px, transparent 1px), linear-gradient(90deg, #111 1px, transparent 1px); background-size: 50px 50px; z-index: -1; animation: move 20s linear infinite; }
+        @keyframes move { from { transform: translate(0,0); } to { transform: translate(-50px, -50px); } }
+
+        /* Floating Signature */
+        .signature { position: fixed; top: 20px; left: 20px; border-left: 2px solid var(--purple); padding-left: 10px; opacity: 0.7; }
+        .signature span { color: var(--neon); font-size: 18px; font-weight: bold; }
+
+        /* Central Neural Core */
+        .stage { height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+        .neuron-node { width: 150px; height: 150px; border: 1px solid #333; border-radius: 50%; position: relative; transition: 0.3s; display: flex; align-items: center; justify-content: center; background: rgba(0,0,0,0.5); }
+        .neuron-node:hover { border-color: var(--neon); box-shadow: 0 0 50px var(--neon); transform: scale(1.1); }
+        
+        /* Pulse Effect */
+        .pulse { position: absolute; width: 100%; height: 100%; border-radius: 50%; border: 1px solid var(--neon); opacity: 0; pointer-events: none; }
+        .active .pulse { animation: ripple 0.8s ease-out; }
+        @keyframes ripple { 0% { transform: scale(1); opacity: 1; } 100% { transform: scale(2.5); opacity: 0; } }
+
+        /* HUD Overlay */
+        .hud { position: fixed; bottom: 40px; text-align: center; width: 100%; pointer-events: none; }
+        .data-stream { color: var(--neon); font-size: 12px; letter-spacing: 5px; text-transform: uppercase; margin-top: 10px; }
     </style>
 </head>
 <body>
-    <div class="lab-frame">
-        <div class="header">
-            <span style="letter-spacing: 5px; color: var(--bio);">PROJECT: SYNAPSE-V5</span>
-            <span style="font-size: 10px; color: #444;">LOC: COMSATS_LAHORE_RESEARCH_DIV</span>
+    <div class="grid"></div>
+    
+    <div class="signature">
+        DESIGNED_BY<br><span>areeb</span>
+    </div>
+
+    <div class="stage">
+        <div id="main-neuron" class="neuron-node" onmouseenter="fireNeuron()">
+            <div class="pulse"></div>
+            <div id="status">IDLE</div>
         </div>
-        <div class="control-panel">
-            <h3>Neural Logic Interface</h3>
-            <p style="font-size: 12px; color: #888; line-height: 1.6;">Simulating bio-inspired synaptic plasticity via CMOS semiconductor logic gates. This unit models the firing potential of an artificial neuron.</p>
-            <div class="data-line">> JUNCTION_TEMP: 29.4°C</div>
-            <div class="data-line">> PROPAGATION_DELAY: 1.2ns</div>
-            <div class="data-line">> ARCHITECTURE: X86_NEUROMORPHIC</div>
-            <button onclick="triggerNeuron()">EXECUTE STIMULUS</button>
-        </div>
-        <div class="visual-engine">
-            <div id="core" class="neuron-core">IDLE</div>
-            <div style="margin-top: 30px; text-align: center;">
-                <div style="font-size: 10px; color: #555; margin-bottom: 5px;">ACTION POTENTIAL INTENSITY</div>
-                <div id="intensity" style="font-size: 32px; color: var(--neon);">0.00%</div>
-            </div>
+        
+        <div class="hud">
+            <div id="output" style="font-size: 40px; font-weight: bold;">0.00V</div>
+            <div class="data-stream">Awaiting Manual Stimulus - Hover to Fire</div>
         </div>
     </div>
-    <div style="position: fixed; bottom: 15px; font-size: 9px; color: #222;">SYSTEM_DESIGN_BY_AREEB_F_DEV</div>
 
     <script>
-        function triggerNeuron() {
-            const core = document.getElementById('core');
-            const intensity = document.getElementById('intensity');
-            let val = 0;
+        function fireNeuron() {
+            const node = document.getElementById('main-neuron');
+            const status = document.getElementById('status');
+            const output = document.getElementById('output');
             
-            core.classList.add('firing');
-            core.innerText = "FIRING";
-            
-            let interval = setInterval(() => {
-                val += 5.5;
-                intensity.innerText = Math.min(val, 100).toFixed(2) + "%";
-                if(val >= 100) {
-                    clearInterval(interval);
-                    setTimeout(() => {
-                        core.classList.remove('firing');
-                        core.innerText = "IDLE";
-                        intensity.innerText = "0.00%";
-                    }, 500);
-                }
-            }, 20);
+            node.classList.add('active');
+            status.innerText = "FIRING";
+            status.style.color = "var(--neon)";
+            output.innerText = "5.00V";
+            output.style.color = "var(--neon)";
+
+            setTimeout(() => {
+                node.classList.remove('active');
+                status.innerText = "IDLE";
+                status.style.color = "white";
+                output.innerText = "0.00V";
+                output.style.color = "white";
+            }, 800);
         }
     </script>
 </body>
